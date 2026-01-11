@@ -30,7 +30,7 @@ SECRET_KEY = '+h^-@3g$c69ql+l+gw$yh(+my_vgetev8(_=cpkiy3^c-lnppk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Custom User Model "MyUser"

@@ -11,7 +11,7 @@ urlpatterns = [
     path('unassigned/', views.unassigned_tickets, name='unassigned'),
     path('ticket/<int:year>/<int:month>/<int:day>/<str:code>/',
          views.ticket_detail, name='ticket_detail'),
-
+    path('vulnerable-search/', views.vulnerable_search, name='vulnerable_search'),
     # assigning tickets to agents
     path('take-ticket/<str:code>/', views.take_ticket, name="take_ticket"),
 

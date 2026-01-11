@@ -13,7 +13,7 @@
 {% else %}
 <!-- [ navigation menu ] start -->
 {% include 'helpdesk/navbar.html' %}
-<!-- [ navigation menu ] end -->
+<!-- [ navigation menu ] end %}
 {% endif %}
 
 
@@ -89,14 +89,25 @@
                             </div>
                             <!-- product profit end -->
                             <!-- sessions-section start -->
-                            <div class="col-xl-8 col-md-6">
+                            <div class="col-xl-12 col-md-12">
                                 <div class="card table-card">
                                     <div class="card-header">
                                         <h5>Tickets asignados</h5>
+                                        <div class="card-header-right">
+                                            <div class="btn-group card-option">
+                                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="feather icon-more-horizontal"></i>
+                                                </button>
+                                                <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                                    <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> Maximizar</span><span style="display:none"><i class="feather icon-minimize"></i> Restaurar</span></a></li>
+                                                    <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> Colapsar</span><span style="display:none"><i class="feather icon-plus"></i> Expandir</span></a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-body px-0 py-0">
                                         <div class="table-responsive">
-                                            <table class="table table">
+                                            <table class="table table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th>Ticket code</th>
@@ -104,18 +115,37 @@
                                                         <th>Actualizado</th>
                                                         <th>Status</th>
                                                         <th>Categoría</th>
+                                                        <th>Asunto</th>
+                                                        <th>Descripción</th>
                                                         <th>Detalles</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for ticket in tickets %}
                                                     <tr>
-                                                        <td>{{ticket.code}}</td>
+                                                        <td><span class="badge badge-light">{{ticket.code}}</span></td>
                                                         <td>{{ticket.created|date:'D j M, Y'}}</td>
                                                         <td>{{ticket.updated|date:'g:i a'}}</td>
-                                                        <td>{{ticket.status.title}}</td>
-                                                        <td>{{ticket.category.title}}</td>
-                                                        <td><a href="{{ticket.get_absolute_url}}">Ver</a>
+                                                        <td>
+                                                            {% if ticket.status == 'OPEN' %}
+                                                            <span class="badge badge-success">{{ticket.status.title}}</span>
+                                                            {% elif ticket.status == 'WAITING' %}
+                                                            <span class="badge badge-warning">{{ticket.status.title}}</span>
+                                                            {% else %}
+                                                            <span class="badge badge-secondary">{{ticket.status.title}}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td><span class="badge badge-info">{{ticket.category.title}}</span></td>
+                                                        <td>{{ticket.subject|default:"Sin asunto"|truncatechars:30}}</td>
+                                                        <td>{{ticket.description|default:"Sin descripción"|truncatechars:50}}</td>
+                                                        <td><a href="{{ticket.get_absolute_url}}" class="btn btn-sm btn-primary">Ver</a></td>
+                                                    </tr>
+                                                    {% empty %}
+                                                    <tr>
+                                                        <td colspan="8" class="text-center py-4">
+                                                            <i class="feather icon-inbox fa-3x text-muted"></i>
+                                                            <h5 class="mt-2">No hay tickets asignados</h5>
+                                                            <p class="text-muted">Los tickets que te asignen aparecerán aquí</p>
                                                         </td>
                                                     </tr>
                                                     {% endfor %}
@@ -247,14 +277,25 @@
                             </div>
                             <!-- product profit end -->
                             <!-- sessions-section start -->
-                            <div class="col-xl-8 col-md-6">
+                            <div class="col-xl-12 col-md-12">
                                 <div class="card table-card">
                                     <div class="card-header">
-                                        <h5>Tickets</h5>
+                                        <h5>Mis Tickets</h5>
+                                        <div class="card-header-right">
+                                            <div class="btn-group card-option">
+                                                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <i class="feather icon-more-horizontal"></i>
+                                                </button>
+                                                <ul class="list-unstyled card-option dropdown-menu dropdown-menu-right">
+                                                    <li class="dropdown-item full-card"><a href="#!"><span><i class="feather icon-maximize"></i> Maximizar</span><span style="display:none"><i class="feather icon-minimize"></i> Restaurar</span></a></li>
+                                                    <li class="dropdown-item minimize-card"><a href="#!"><span><i class="feather icon-minus"></i> Colapsar</span><span style="display:none"><i class="feather icon-plus"></i> Expandir</span></a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-body px-0 py-0">
                                         <div class="table-responsive">
-                                            <table class="table table">
+                                            <table class="table table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th>Ticket code</th>
@@ -262,18 +303,45 @@
                                                         <th>Actualizado</th>
                                                         <th>Status</th>
                                                         <th>Categoría</th>
+                                                        <th>Asunto</th>
+                                                        <th>Descripción</th>
                                                         <th>Detalles</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     {% for ticket in tickets %}
                                                     <tr>
-                                                        <td>{{ticket.code}}</td>
-                                                        <td>{{ticket.created|date:'D j M, Y'}}</td>
-                                                        <td>{{ticket.updated|date:'g:i a'}}</td>
-                                                        <td>{{ticket.status.title}}</td>
-                                                        <td>{{ticket.category.title}}</td>
-                                                        <td><a href="{{ticket.get_absolute_url}}">Ver</a>
+                                                        <td><span class="badge badge-light">{{ticket.code|default:"N/A"}}</span></td>
+                                                        <td>{{ticket.created|date:'D j M, Y'|default:"-"}}</td>
+                                                        <td>{{ticket.updated|date:'g:i a'|default:"-"}}</td>
+                                                        <td>
+                                                            {% if ticket.status == 'OPEN' %}
+                                                            <span class="badge badge-success">{{ticket.status.title|default:"-"}}</span>
+                                                            {% elif ticket.status == 'WAITING' %}
+                                                            <span class="badge badge-warning">{{ticket.status.title|default:"-"}}</span>
+                                                            {% elif ticket.status == 'TODO' %}
+                                                            <span class="badge badge-info">{{ticket.status.title|default:"-"}}</span>
+                                                            {% else %}
+                                                            <span class="badge badge-secondary">{{ticket.status.title|default:"-"}}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td><span class="badge badge-info">{{ticket.category.title|default:"-"}}</span></td>
+                                                        <td>{{ticket.subject|default:"Sin asunto"|truncatechars:30}}</td>
+                                                        <td>{{ticket.description|default:"Sin descripción"|truncatechars:50}}</td>
+                                                        <td>
+                                                            {% if ticket.code %}
+                                                            <a href="{{ticket.get_absolute_url}}" class="btn btn-sm btn-primary">Ver</a>
+                                                            {% else %}
+                                                            <span class="text-muted">N/A</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                    {% empty %}
+                                                    <tr>
+                                                        <td colspan="8" class="text-center py-4">
+                                                            <i class="feather icon-inbox fa-3x text-muted"></i>
+                                                            <h5 class="mt-2">No hay tickets</h5>
+                                                            <p class="text-muted">Crea tu primer ticket para comenzar</p>
                                                         </td>
                                                     </tr>
                                                     {% endfor %}
@@ -338,4 +406,5 @@
 </div>
 
 {% endif %}
+
 {% endblock body %}
